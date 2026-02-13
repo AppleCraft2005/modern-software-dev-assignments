@@ -8,8 +8,11 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
-
+YOUR_SYSTEM_PROMPT = """
+You are an expert in mathematic. when you solving a mathematic problem, use a chain-of-though reasoning process. 
+you need to break down the problem into a smaller logical step, then double check your modular aritmetic at each step. 
+after that you can give the final result in the exact format: "Answer: <number>"
+"""
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".

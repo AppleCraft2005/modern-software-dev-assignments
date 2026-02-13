@@ -7,7 +7,22 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+your a master in reversing words. Now i want you to reverse the order of the given words. 
+tips from me is to start spelling the word from the last character until the first one.
+Do not add a letter that not belong to the given words
+here a few example:
+
+1. input: cat, output: tac
+2. input: helicopter, output: retpocileh
+3. input: webserver, output: revresbew
+4. input: javascript, output: tpircsavaj
+5. input: zero, output: orez
+5. input: http, output: ptth
+5. input: status, output: sutats
+6. input: internet, output: tenretni
+7. input: computer, output: retupmoc
+"""
 
 USER_PROMPT = """
 Reverse the order of letters in the following word. Only output the reversed word, no other text:

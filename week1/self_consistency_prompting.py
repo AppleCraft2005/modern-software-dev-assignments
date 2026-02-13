@@ -9,7 +9,14 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a logical reasoning assistant. Solve the problem by visualizing a distance line.
+Theres few step you need to follow: Identify the TOTAL distance of the trip. 
+After that, Identify the location of the FIRST stop (distance from start).
+then, Calculate the location of the SECOND stop by subtracting the "miles before end" from the TOTAL distance.
+finally, Calculate the distance between the Second Stop and the First Stop.
+and don't forget to provide the final answer on the last line as "Answer: <number>" dont show any other than this format: "Answer: <number>".
+"""
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".

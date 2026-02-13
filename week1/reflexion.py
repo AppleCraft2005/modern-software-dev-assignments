@@ -15,7 +15,12 @@ Keep the implementation minimal.
 """
 
 # TODO: Fill this in!
-YOUR_REFLEXION_PROMPT = ""
+YOUR_REFLEXION_PROMPT = """
+You are an expert Python debugger. 
+You will be given a function implementation and a list of failed test cases.
+Your task is to rewrite the function to fix the errors.
+Output ONLY the full corrected Python code block. No explanations.
+"""
 
 
 # Ground-truth test suite used to evaluate generated code
@@ -92,11 +97,23 @@ def generate_initial_function(system_prompt: str) -> str:
 
 
 def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
-    """TODO: Build the user message for the reflexion step using prev_code and failures.
-
-    Return a string that will be sent as the user content alongside the reflexion system prompt.
-    """
-    return ""
+    """TODO: Build the user message for the reflexion step using prev_code and failures."""
+    
+    # Kita gabungkan list error menjadi satu string panjang
+    failure_report = "\n".join([f"- {f}" for f in failures])
+    
+    # Kita buat pesan untuk AI
+    message = (
+        f"Here is the previous code implementation:\n"
+        f"```python\n"
+        f"{prev_code}\n"
+        f"```\n\n"
+        f"It failed the following tests:\n"
+        f"{failure_report}\n\n"
+        f"Please fix the code to handle these edge cases correctly."
+    )
+    
+    return message
 
 
 def apply_reflexion(

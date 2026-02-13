@@ -37,7 +37,11 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a precise Python developer. 
+Your task is to generate Python code based STRICTLY on the provided API documentation context.
+Do not invent endpoints or authentication methods. Use exactly what is written in the Context.
+"""
 
 
 # For this simple example
@@ -56,7 +60,7 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    return corpus
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:
