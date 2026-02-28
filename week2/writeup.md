@@ -9,7 +9,7 @@ Fill out all of the `TODO`s in this file.
 
 ## SUBMISSION DETAILS
 
-Name: **TODO** \
+Name: **Jovan Gilbert Natamasindah** \
 SUNet ID: **TODO** \
 Citations: **TODO**
 
