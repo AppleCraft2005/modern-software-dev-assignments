@@ -11,6 +11,33 @@ async function loadNotes() {
   for (const n of notes) {
     const li = document.createElement('li');
     li.textContent = `${n.title}: ${n.content}`;
+    
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = async () => {
+      const newTitle = prompt('Edit title:', n.title);
+      if (newTitle === null) return;
+      const newContent = prompt('Edit content:', n.content);
+      if (newContent === null) return;
+      await fetchJSON(`/notes/${n.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle, content: newContent }),
+      });
+      loadNotes();
+    };
+    li.appendChild(editBtn);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = async () => {
+      if (confirm('Are you sure you want to delete this note?')) {
+        await fetchJSON(`/notes/${n.id}`, { method: 'DELETE' });
+        loadNotes();
+      }
+    };
+    li.appendChild(deleteBtn);
+
     list.appendChild(li);
   }
 }
