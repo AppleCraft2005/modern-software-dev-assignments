@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session
 
@@ -56,6 +57,22 @@ def patch_note(note_id: int, payload: NotePatch, db: Session = Depends(get_db)) 
     db.flush()
     db.refresh(note)
     return NoteRead.model_validate(note)
+
+
+class BulkDeleteRequest(BaseModel):
+    ids: list[int]
+
+
+@router.delete("/bulk", status_code=200)
+def bulk_delete_notes(payload: BulkDeleteRequest, db: Session = Depends(get_db)):
+    deleted = 0
+    for note_id in payload.ids:
+        note = db.get(Note, note_id)
+        if note:
+            db.delete(note)
+            deleted += 1
+    db.flush()
+    return {"deleted": deleted}
 
 
 @router.get("/{note_id}", response_model=NoteRead)
