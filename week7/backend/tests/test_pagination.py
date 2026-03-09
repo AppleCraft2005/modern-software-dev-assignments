@@ -241,11 +241,18 @@ class TestEdgeCases:
         assert r.status_code == 200
         assert r.json() == []
 
+
     def test_negative_skip_rejected_or_empty(self, client):
         """Negative skip is either rejected (422) or treated as 0."""
         _seed_notes(client, 3)
         r = client.get("/notes/", params={"skip": -1})
-        assert r.status_code in (200, 422)
+        if r.status_code == 200:
+            # If accepted, verify it behaves like skip=0
+            expected_r = client.get("/notes/", params={"skip": 0})
+            assert r.json() == expected_r.json()
+        else:
+            assert r.status_code == 422
+
 
     def test_negative_limit_rejected_or_empty(self, client):
         """Negative limit is either rejected (422) or treated as 0."""
