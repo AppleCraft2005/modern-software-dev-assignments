@@ -6,7 +6,14 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models import ActionItem
-from ..schemas import ActionItemCreate, ActionItemPatch, ActionItemRead
+from ..schemas import (
+    ActionItemCreate,
+    ActionItemPatch,
+    ActionItemRead,
+    ExtractedItem,
+    ExtractRequest,
+)
+from ..services.extract import extract_action_items
 
 router = APIRouter(prefix="/action-items", tags=["action_items"])
 
@@ -34,9 +41,21 @@ def list_items(
     return [ActionItemRead.model_validate(row) for row in rows]
 
 
+@router.post("/extract", response_model=list[ExtractedItem])
+def extract_items(payload: ExtractRequest) -> list[ExtractedItem]:
+    """Extract action items from free-form text with priority and due-date detection."""
+    raw_items = extract_action_items(payload.text)
+    return [ExtractedItem(**item) for item in raw_items]
+
+
 @router.post("/", response_model=ActionItemRead, status_code=201)
 def create_item(payload: ActionItemCreate, db: Session = Depends(get_db)) -> ActionItemRead:
-    item = ActionItem(description=payload.description, completed=False)
+    item = ActionItem(
+        description=payload.description,
+        completed=False,
+        priority=payload.priority,
+        due_date=payload.due_date,
+    )
     db.add(item)
     db.flush()
     db.refresh(item)
@@ -64,6 +83,10 @@ def patch_item(item_id: int, payload: ActionItemPatch, db: Session = Depends(get
         item.description = payload.description
     if payload.completed is not None:
         item.completed = payload.completed
+    if payload.priority is not None:
+        item.priority = payload.priority
+    if payload.due_date is not None:
+        item.due_date = payload.due_date
     db.add(item)
     db.flush()
     db.refresh(item)

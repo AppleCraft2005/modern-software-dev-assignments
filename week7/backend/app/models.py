@@ -27,5 +27,7 @@ class ActionItem(Base, TimestampMixin):
     id = Column(Integer, primary_key=True, index=True)
     description = Column(Text, nullable=False)
     completed = Column(Boolean, default=False, nullable=False)
+    priority = Column(String(10), default="Medium", nullable=False)
+    due_date = Column(String(50), nullable=True)
 
 
