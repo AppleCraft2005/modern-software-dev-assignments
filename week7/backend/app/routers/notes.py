@@ -37,7 +37,7 @@ def list_notes(
 
 @router.post("/", response_model=NoteRead, status_code=201)
 def create_note(payload: NoteCreate, db: Session = Depends(get_db)) -> NoteRead:
-    note = Note(title=payload.title, content=payload.content)
+    note = Note(title=payload.title, content=payload.content, category_id=payload.category_id)
     db.add(note)
     db.flush()
     db.refresh(note)
@@ -53,6 +53,8 @@ def patch_note(note_id: int, payload: NotePatch, db: Session = Depends(get_db)) 
         note.title = payload.title
     if payload.content is not None:
         note.content = payload.content
+    if payload.category_id is not None:
+        note.category_id = payload.category_id
     db.add(note)
     db.flush()
     db.refresh(note)
