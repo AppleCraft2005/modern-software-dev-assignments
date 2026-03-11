@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-start justify-center pt-16">
+  <div class="w-full max-w-xl px-4">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Task Manager</h1>
+
+    <!-- Create Task Form -->
+    <form id="task-form" class="bg-white rounded-xl shadow p-6 mb-8 space-y-4">
+      <input
+        id="title"
+        type="text"
+        placeholder="Task title"
+        required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <input
+        id="description"
+        type="text"
+        placeholder="Description (optional)"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <button
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+      >
+        Add Task
+      </button>
+    </form>
+
+    <!-- Task List -->
+    <ul id="task-list" class="space-y-3"></ul>
+  </div>
+
+  <script>
+    const API = "/tasks";
+
+    // ---- Fetch & render ----
+    async function loadTasks() {
+      const res = await fetch(API);
+      const tasks = await res.json();
+      const list = document.getElementById("task-list");
+      list.innerHTML = "";
+      tasks.forEach((t) => list.appendChild(createTaskCard(t)));
+    }
+
+    function createTaskCard(task) {
+      const li = document.createElement("li");
+      li.className =
+        "bg-white rounded-xl shadow p-4 flex items-center justify-between gap-4";
+
+      const left = document.createElement("div");
+      left.className = "flex items-center gap-3 flex-1 min-w-0";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = task.completed;
+      checkbox.className = "w-5 h-5 accent-blue-600 cursor-pointer shrink-0";
+      checkbox.addEventListener("change", () => toggleTask(task.id, !task.completed));
+
+      const text = document.createElement("div");
+      text.className = "min-w-0";
+
+      const title = document.createElement("p");
+      title.className =
+        "font-medium truncate " +
+        (task.completed ? "line-through text-gray-400" : "text-gray-800");
+      title.textContent = task.title;
+
+      const desc = document.createElement("p");
+      desc.className = "text-sm text-gray-500 truncate";
+      desc.textContent = task.description || "";
+
+      text.appendChild(title);
+      text.appendChild(desc);
+      left.appendChild(checkbox);
+      left.appendChild(text);
+
+      const del = document.createElement("button");
+      del.textContent = "Delete";
+      del.className =
+        "text-sm text-red-500 hover:text-red-700 font-medium shrink-0 cursor-pointer";
+      del.addEventListener("click", () => deleteTask(task.id));
+
+      li.appendChild(left);
+      li.appendChild(del);
+      return li;
+    }
+
+    // ---- CRUD helpers ----
+    async function createTask(title, description) {
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description }),
+      });
+      loadTasks();
+    }
+
+    async function toggleTask(id, completed) {
+      await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed }),
+      });
+      loadTasks();
+    }
+
+    async function deleteTask(id) {
+      await fetch(`${API}/${id}`, { method: "DELETE" });
+      loadTasks();
+    }
+
+    // ---- Form submit ----
+    document.getElementById("task-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+      if (!title) return;
+      createTask(title, description);
+      e.target.reset();
+    });
+
+    // ---- Initial load ----
+    loadTasks();
+  </script>
+</body>
+</html>
